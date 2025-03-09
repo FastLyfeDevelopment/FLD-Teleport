@@ -27,17 +27,14 @@ local teleportZones = {
 local teleportDistance = 2.0 -- How close the player needs to be to trigger the marker
 local isInZone = false
 local currentZone = nil
-local hasShownMessage = false  -- Track if we've shown the message already
-
--- Main loop to check player's position
+local hasShownMessage = false  
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
 
-        local playerCoords = GetEntityCoords(PlayerPedId())  -- Get the player's current position
+        local playerCoords = GetEntityCoords(PlayerPedId()) 
         local zoneFound = false
 
-        -- Check if player is near any teleport zone
         for zoneName, zoneData in pairs(teleportZones) do
             local distance = GetDistanceBetweenCoords(playerCoords, zoneData.EnterMarker, true)
             if distance < teleportDistance then
@@ -45,25 +42,22 @@ Citizen.CreateThread(function()
                 isInZone = true
                 currentZone = zoneData
 
-                -- Show the message in the chat only once when entering the zone
                 if not hasShownMessage then
                     TriggerEvent('chat:addMessage', {
                         args = {"[Teleport]", "Press E to enter"},
                         color = {211, 188, 216}  -- Set the RGB color for the message
                     })
-                    hasShownMessage = true  -- Set the flag to prevent spam
+                    hasShownMessage = true  
                 end
 
-                -- Remove the DrawMarker function to stop drawing the red circle marker
-                -- DrawMarker(1, zoneData.EnterMarker.x, zoneData.EnterMarker.y, zoneData.EnterMarker.z - 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 100, false, true, 2, false, false, false, false)
+       
             end
         end
 
-        -- If the player is no longer in any zone, reset flags
         if not zoneFound then
             if isInZone then
                 isInZone = false
-                hasShownMessage = false  -- Reset message flag when leaving the zone
+                hasShownMessage = false  
             end
         end
 
@@ -88,13 +82,12 @@ Citizen.CreateThread(function()
         Citizen.Wait(0)
 
         if not isInZone then
-            -- Hide the message when the player is not near the teleport zone (message hides when leaving zone)
             if hasShownMessage then
                 TriggerEvent('chat:addMessage', {
                     args = {"[Teleport]", "You left Modos."},
                     color = {211, 188, 216}  -- Set the RGB color for the message
                 })
-                hasShownMessage = false  -- Prevent further "You left" messages
+                hasShownMessage = false  
             end
         end
     end
