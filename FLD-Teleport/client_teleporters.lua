@@ -27,17 +27,15 @@ local teleportZones = {
 local teleportDistance = 2.0 -- How close the player needs to be to trigger the marker
 local isInZone = false
 local currentZone = nil
-local hasShownMessage = false  -- Track if we've shown the message already
+local hasShownMessage = false 
 
--- Main loop to check player's position
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(0)
 
-        local playerCoords = GetEntityCoords(PlayerPedId())  -- Get the player's current position
+        local playerCoords = GetEntityCoords(PlayerPedId())  -
         local zoneFound = false
 
-        -- Check if player is near any teleport zone
         for zoneName, zoneData in pairs(teleportZones) do
             local distance = GetDistanceBetweenCoords(playerCoords, zoneData.EnterMarker, true)
             if distance < teleportDistance then
@@ -53,21 +51,16 @@ Citizen.CreateThread(function()
                     })
                     hasShownMessage = true  -- Set the flag to prevent spam
                 end
-
-                -- Remove the DrawMarker function to stop drawing the red circle marker
-                -- DrawMarker(1, zoneData.EnterMarker.x, zoneData.EnterMarker.y, zoneData.EnterMarker.z - 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 100, false, true, 2, false, false, false, false)
             end
         end
 
-        -- If the player is no longer in any zone, reset flags
         if not zoneFound then
             if isInZone then
                 isInZone = false
-                hasShownMessage = false  -- Reset message flag when leaving the zone
+                hasShownMessage = false  
             end
         end
 
-        -- Check if the player is pressing the key (E) near the teleport zone
         if isInZone and IsControlJustPressed(0, 38) then  -- 38 is the control for "E"
             if currentZone then
                 -- Teleport the player to the landing location
